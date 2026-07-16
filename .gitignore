@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+
+# env files (keep the examples)
+.env
+.env.*
+!.env.example
+
+# databases
+*.db
+*.db-journal
+data/
+
+# open-assets compiled tailwind (exports/ and assets.lock are committed)
+assets/dist/
+
+# misc
+.DS_Store
+*.pem
+*.log
+.vercel
+.turbo
+tsconfig.tsbuildinfo

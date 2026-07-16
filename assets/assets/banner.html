@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 1280px;
+      height: 640px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #06110d 0%, #0b2019 55%, #081517 100%);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      position: relative;
+    }
+
+    /* ---------- Backdrop ---------- */
+
+    .grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 45%, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 45%, black 40%, transparent 100%);
+    }
+
+    .glow-left {
+      position: absolute;
+      top: 45%;
+      left: 8%;
+      width: 700px;
+      height: 480px;
+      background: radial-gradient(ellipse at center, rgba(52, 211, 153, 0.13) 0%, transparent 68%);
+      transform: translateY(-50%);
+    }
+
+    .glow-right {
+      position: absolute;
+      top: 50%;
+      right: -6%;
+      width: 640px;
+      height: 560px;
+      background: radial-gradient(ellipse at center, rgba(45, 172, 137, 0.16) 0%, transparent 70%);
+      transform: translateY(-50%);
+    }
+
+    .glow-sky {
+      position: absolute;
+      top: -120px;
+      right: 240px;
+      width: 420px;
+      height: 300px;
+      background: radial-gradient(ellipse at center, rgba(125, 211, 252, 0.07) 0%, transparent 70%);
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 120% 110% at 50% 50%, transparent 55%, rgba(3, 10, 8, 0.55) 100%);
+    }
+
+    /* ---------- Left: copy ---------- */
+
+    .copy {
+      position: absolute;
+      left: 76px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 520px;
+      z-index: 2;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 3.5px;
+      color: #34d399;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .kicker-dash {
+      width: 26px;
+      height: 1px;
+      background: linear-gradient(90deg, #34d399, transparent);
+    }
+
+    .title {
+      font-size: 74px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -2.8px;
+      line-height: 0.98;
+      margin-bottom: 24px;
+    }
+
+    .subtitle {
+      font-size: 21.5px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.62);
+      letter-spacing: -0.2px;
+      line-height: 1.5;
+      max-width: 490px;
+      margin-bottom: 34px;
+    }
+
+    .subtitle strong {
+      color: rgba(255, 255, 255, 0.92);
+      font-weight: 600;
+    }
+
+    .terminal {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 13px 22px 13px 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .terminal .prompt { color: #86efac; }
+    .terminal .cmd-flag { color: rgba(255, 255, 255, 0.45); }
+
+    /* ---------- Right: form -> server -> analysis ---------- */
+
+    .art {
+      position: absolute;
+      right: 36px;
+      top: 0;
+      width: 630px;
+      height: 640px;
+      z-index: 1;
+    }
+
+    .connectors {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .out-label {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      color: rgba(255, 255, 255, 0.42);
+      white-space: nowrap;
+    }
+
+    /* Feedback form card (input) */
+    .form-card {
+      position: absolute;
+      left: 4px;
+      top: 96px;
+      width: 196px;
+      border-radius: 16px;
+      background: linear-gradient(170deg, #12261f 0%, #0e1f1a 100%);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      padding: 16px 16px 18px;
+    }
+
+    .form-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 12px;
+    }
+
+    .form-title-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: linear-gradient(160deg, #34d399, #0e9f6e);
+      position: relative;
+    }
+    .form-title-icon::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.9);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 55% 70%, 30% 100%, 30% 70%, 0 70%);
+    }
+
+    .form-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 5px;
+    }
+
+    .form-input {
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 7px 9px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .form-input-tall {
+      height: 44px;
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, 0.55);
+      white-space: normal;
+      line-height: 1.4;
+    }
+
+    .severity-row { display: flex; gap: 6px; margin-bottom: 14px; }
+
+    .sev-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      padding: 3px 9px;
+    }
+
+    .sev-pill.active {
+      color: #06110d;
+      background: #f59e0b;
+      border-color: #f59e0b;
+      font-weight: 700;
+    }
+
+    .form-submit {
+      border-radius: 9px;
+      background: linear-gradient(160deg, #34d399, #0e9f6e);
+      color: #06110d;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      padding: 8px 0;
+      box-shadow: 0 6px 18px rgba(52, 211, 153, 0.25);
+    }
+
+    .platform-pills {
+      position: absolute;
+      left: 4px;
+      top: 402px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .platform-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      padding: 3px 8px;
+    }
+
+    /* Server node (middle) */
+    .server-node {
+      position: absolute;
+      left: 268px;
+      top: 250px;
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      background: linear-gradient(170deg, #123128 0%, #0c241d 100%);
+      border: 1.5px solid rgba(52, 211, 153, 0.45);
+      box-shadow:
+        0 16px 44px rgba(0, 0, 0, 0.45),
+        0 0 40px rgba(52, 211, 153, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .server-bubble {
+      width: 34px;
+      height: 26px;
+      border-radius: 9px;
+      background: linear-gradient(160deg, #34d399, #0e9f6e);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+    .server-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 7px;
+      width: 10px;
+      height: 10px;
+      background: #0e9f6e;
+      clip-path: polygon(0 0, 100% 0, 0 100%);
+    }
+    .server-bubble .b-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(6, 17, 13, 0.85);
+    }
+
+    .server-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 3px;
+    }
+
+    /* DB chip under server */
+    .db-chip {
+      position: absolute;
+      left: 268px;
+      top: 366px;
+      width: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 100px;
+      padding: 4px 0;
+    }
+
+    .db-cyl {
+      width: 10px;
+      height: 11px;
+      border-radius: 5px 5px 4px 4px / 3px 3px 2px 2px;
+      background: rgba(125, 211, 252, 0.75);
+    }
+
+    /* Chat / analysis card (output) */
+    .chat-card {
+      position: absolute;
+      left: 420px;
+      top: 118px;
+      width: 206px;
+      border-radius: 16px;
+      background: linear-gradient(170deg, #14281f 0%, #0f2019 100%);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      padding: 14px 14px 16px;
+    }
+
+    .chat-user {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 11px 11px 3px 11px;
+      padding: 8px 10px;
+      margin-left: 26px;
+      margin-bottom: 10px;
+    }
+
+    .chat-reply {
+      background: rgba(52, 211, 153, 0.09);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 11px 11px 11px 3px;
+      padding: 9px 10px 11px;
+      margin-right: 14px;
+    }
+
+    .chat-reply-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #86efac;
+      margin-bottom: 7px;
+    }
+
+    .spark {
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle at 50% 50%, #86efac, #34d399);
+      clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+    }
+
+    .chat-line {
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.28);
+      margin-bottom: 5px;
+    }
+
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 34px;
+      margin-top: 9px;
+      padding-top: 7px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(180deg, #34d399, rgba(52, 211, 153, 0.35));
+    }
+
+    .chart-labels {
+      display: flex;
+      gap: 5px;
+      margin-top: 4px;
+    }
+
+    .chart-label {
+      flex: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7px;
+      color: rgba(255, 255, 255, 0.35);
+      text-align: center;
+    }
+
+    /* Slack chip */
+    .slack-chip {
+      position: absolute;
+      left: 420px;
+      top: 420px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 8px 14px 8px 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .slack-hash {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: linear-gradient(160deg, #e01e5a 0%, #ecb22e 50%, #36c5f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow-left"></div>
+  <div class="glow-right"></div>
+  <div class="glow-sky"></div>
+
+  <!-- Left: copy -->
+  <div class="copy">
+    <div class="kicker">Self-hosted · Open source<span class="kicker-dash"></span></div>
+    <div class="title">Feedback MCP</div>
+    <div class="subtitle"><strong>Collect user feedback from any app. Analyze it with Claude.</strong> One endpoint in, MCP out. Your forms, your database, your infrastructure.</div>
+    <div class="terminal"><span class="prompt">$</span>docker compose up <span class="cmd-flag">-d</span></div>
+  </div>
+
+  <!-- Right: feedback form -> server -> AI analysis -->
+  <div class="art">
+    <svg class="connectors" width="630" height="640" viewBox="0 0 630 640" fill="none">
+      <defs>
+        <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="rgba(52,211,153,0.05)" />
+          <stop offset="0.5" stop-color="rgba(52,211,153,0.45)" />
+          <stop offset="1" stop-color="rgba(52,211,153,0.7)" />
+        </linearGradient>
+      </defs>
+      <path d="M 200 220 C 240 220, 232 288, 266 292" stroke="url(#line)" stroke-width="1.5" />
+      <path d="M 366 292 C 400 290, 390 216, 418 210" stroke="url(#line)" stroke-width="1.5" />
+      <path d="M 366 306 C 402 310, 392 428, 418 434" stroke="url(#line)" stroke-width="1.5" />
+      <circle cx="266" cy="292" r="3" fill="#34d399" opacity="0.9" />
+      <circle cx="418" cy="210" r="3" fill="#34d399" opacity="0.9" />
+      <circle cx="418" cy="434" r="3" fill="#34d399" opacity="0.9" />
+    </svg>
+
+    <!-- Input: a feedback form -->
+    <div class="form-card">
+      <div class="form-title"><div class="form-title-icon"></div>Bug Report</div>
+      <div class="form-label">Title</div>
+      <div class="form-input">Crash on launch</div>
+      <div class="form-label">What happened?</div>
+      <div class="form-input form-input-tall">App closes immediately after opening on iPhone 15…</div>
+      <div class="form-label">Severity</div>
+      <div class="severity-row">
+        <div class="sev-pill">low</div>
+        <div class="sev-pill">med</div>
+        <div class="sev-pill active">high</div>
+      </div>
+      <div class="form-submit">Send feedback</div>
+    </div>
+    <div class="out-label" style="left: 4px; top: 76px;">POST /api/v1/feedback</div>
+    <div class="platform-pills">
+      <div class="platform-pill">ios</div>
+      <div class="platform-pill">android</div>
+      <div class="platform-pill">web</div>
+    </div>
+
+    <!-- Middle: the server -->
+    <div class="server-node">
+      <div class="server-bubble">
+        <div class="b-dot"></div><div class="b-dot"></div><div class="b-dot"></div>
+      </div>
+      <div class="server-name">feedback-mcp</div>
+    </div>
+    <div class="db-chip"><div class="db-cyl"></div>postgres · sqlite</div>
+
+    <!-- Output: analysis in an MCP client -->
+    <div class="chat-card">
+      <div class="chat-user">Summarize this week's bug reports</div>
+      <div class="chat-reply">
+        <div class="chat-reply-title"><div class="spark"></div>12 reports · 3 themes</div>
+        <div class="chat-line" style="width: 92%;"></div>
+        <div class="chat-line" style="width: 78%;"></div>
+        <div class="chat-line" style="width: 85%;"></div>
+        <div class="chart">
+          <div class="bar" style="height: 100%;"></div>
+          <div class="bar" style="height: 62%;"></div>
+          <div class="bar" style="height: 40%;"></div>
+          <div class="bar" style="height: 26%;"></div>
+        </div>
+        <div class="chart-labels">
+          <div class="chart-label">crash</div>
+          <div class="chart-label">login</div>
+          <div class="chart-label">sync</div>
+          <div class="chart-label">ui</div>
+        </div>
+      </div>
+    </div>
+    <div class="out-label" style="left: 420px; top: 98px;">MCP · Claude</div>
+
+    <!-- Slack cross-post chip -->
+    <div class="slack-chip"><div class="slack-hash">#</div>cross-posted to #feedback</div>
+  </div>
+
+  <div class="vignette"></div>
+</body>
+</html>

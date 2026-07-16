@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "assets": {
+    "banner/banner": {
+      "1280x640": {
+        "sourceChecksum": "sha256:eadf22789bad5c0e8f980bfeb09c3dce58c76335ac48be887f679cafe653dd56",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/assets/exports/banner/banner.png",
+        "exportedAt": "2026-07-16T22:44:23.767Z"
+      }
+    },
+    "og/og": {
+      "1200x630": {
+        "sourceChecksum": "sha256:a405639f9d9dfab816cb97897a853733152747f4aac0d217ae51a9cf7ee42873",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/assets/exports/og/og.png",
+        "exportedAt": "2026-07-16T22:43:52.795Z"
+      }
+    }
+  }
+}

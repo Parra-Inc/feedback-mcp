@@ -1,0 +1,11 @@
+{
+  "slug": "bug-report",
+  "name": "Bug Report",
+  "description": "Something is broken or not working as expected.",
+  "fields": [
+    { "name": "title", "type": "string", "label": "Title", "required": true, "max": 120 },
+    { "name": "description", "type": "string", "label": "What happened?", "required": true, "max": 5000 },
+    { "name": "severity", "type": "enum", "label": "Severity", "values": ["low", "medium", "high", "critical"] },
+    { "name": "email", "type": "email", "label": "Your email (optional)" }
+  ]
+}

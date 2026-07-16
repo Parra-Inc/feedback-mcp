@@ -1,0 +1,20 @@
+// Feedback is the only mutable data in the system. Projects and forms are
+// declarative config (see config/projects/**), so they are intentionally not
+// database tables. `data` and `metadata` are JSON serialized as strings to
+// keep a single schema portable across PostgreSQL and SQLite.
+model Feedback {
+  // The app layer overrides this default with a prefixed id (fb_...); the
+  // cuid fallback keeps `id` optional in the client types and is portable
+  // across providers.
+  id          String   @id @default(cuid())
+  projectSlug String
+  formSlug    String
+  platform    String?
+  data        String
+  metadata    String?
+  userId      String?
+  createdAt   DateTime @default(now())
+
+  @@index([projectSlug, formSlug, createdAt])
+  @@index([projectSlug, platform])
+}

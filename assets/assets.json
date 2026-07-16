@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "name": "Feedback MCP",
+  "publicDir": "public",
+  "command": "open-assets render --force",
+  "collections": [
+    {
+      "id": "banner",
+      "label": "GitHub Banner",
+      "sourceSize": { "width": 1280, "height": 640 },
+      "borderRadius": 8,
+      "templates": [
+        { "src": "assets/banner.html", "name": "banner", "label": "GitHub Banner" }
+      ],
+      "export": [
+        { "name": "1280", "label": "1280px", "size": { "width": 1280, "height": 640 } }
+      ]
+    },
+    {
+      "id": "og",
+      "label": "OG Image",
+      "sourceSize": { "width": 1200, "height": 630 },
+      "borderRadius": 8,
+      "templates": [
+        { "src": "assets/og.html", "name": "og", "label": "Social Card" }
+      ],
+      "export": [
+        { "name": "og", "label": "OG Image", "size": { "width": 1200, "height": 630 } }
+      ]
+    }
+  ]
+}

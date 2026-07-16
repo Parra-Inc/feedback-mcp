@@ -1,0 +1,112 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: 💬
+        - generic [ref=e6]: Feedback MCP
+      - link "GitHub" [ref=e7] [cursor=pointer]:
+        - /url: https://github.com/Parra-Inc/feedback-mcp
+    - generic [ref=e10]:
+      - paragraph [ref=e11]: Free • Open source • MIT licensed • Self-hosted
+      - heading "The open-source feedback MCP server" [level=1] [ref=e12]
+      - paragraph [ref=e13]: "Collect user feedback from any app through one API endpoint. Analyze it with Claude through the Model Context Protocol. No dashboard, no SaaS, no lock-in: your feedback in your database."
+      - generic [ref=e14]:
+        - link "Get started on GitHub" [ref=e15] [cursor=pointer]:
+          - /url: https://github.com/Parra-Inc/feedback-mcp
+        - link "How it works" [ref=e16] [cursor=pointer]:
+          - /url: "#how-it-works"
+      - code [ref=e19]: "git clone https://github.com/Parra-Inc/feedback-mcp.git cd feedback-mcp cp apps/server/.env.example .env # set MCP_SECRET + ingest keys docker compose up -d # SQLite, zero dependencies"
+    - generic [ref=e21]:
+      - heading "What is a feedback MCP server?" [level=2] [ref=e22]
+      - generic [ref=e23]:
+        - paragraph [ref=e24]:
+          - text: A feedback MCP server is a feedback collection tool that speaks the
+          - link "Model Context Protocol" [ref=e25] [cursor=pointer]:
+            - /url: https://modelcontextprotocol.io
+          - text: ". Your apps submit feedback (bug reports, feature requests, NPS, anything you define) to a single self-hosted endpoint. Your AI assistant then connects to the same server as an MCP client and works with that feedback directly: listing, searching, aggregating, and summarizing it on demand."
+        - paragraph [ref=e26]: "That flips the usual model. Instead of building dashboards and reading through submissions one by one, you ask questions in plain language and let the model do the reading. Feedback MCP keeps the pipeline minimal: declarative form schemas, one ingest endpoint, a small read API, an MCP server, and optional Slack cross-posting. Everything runs on your infrastructure."
+    - generic [ref=e27]:
+      - heading "How it works" [level=2] [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]: "1"
+          - heading "Define your forms" [level=3] [ref=e32]
+          - paragraph [ref=e33]: Add a project folder with JSON form definitions to config/projects. Deploy with Docker, Railway, Render, or Vercel.
+          - code [ref=e35]: config/projects/my-app/ project.json forms/ bug-report.json feature-request.json
+        - generic [ref=e36]:
+          - generic [ref=e37]: "2"
+          - heading "Send feedback from your app" [level=3] [ref=e38]
+          - paragraph [ref=e39]: POST submissions with your ingest key. Data is validated against the form schema and stored with platform and metadata.
+          - code [ref=e41]: "POST /api/v1/feedback X-Feedback-Key: <ingest key> { \"project\": \"my-app\", \"form\": \"bug-report\", \"platform\": \"ios\", \"data\": { \"title\": \"Crash on launch\", \"severity\": \"high\" } }"
+        - generic [ref=e42]:
+          - generic [ref=e43]: "3"
+          - heading "Analyze it with Claude" [level=3] [ref=e44]
+          - paragraph [ref=e45]: "Connect any MCP client to your instance and ask real questions about your feedback: trends, summaries, themes, and specific reports."
+          - code [ref=e47]: "> Summarize this week's bug reports for my-app > What features are users requesting most on iOS?"
+    - generic [ref=e49]:
+      - heading "Everything you need, nothing you don't" [level=2] [ref=e50]
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - heading "One endpoint for all feedback" [level=3] [ref=e53]
+          - paragraph [ref=e54]: "Apps POST to /api/v1/feedback with an ingest key. iOS, Android, web, desktop, or server: if it can make an HTTP request, it can send feedback."
+        - generic [ref=e55]:
+          - heading "Built-in MCP server" [level=3] [ref=e56]
+          - paragraph [ref=e57]: Connect Claude Code, Claude Desktop, or any MCP client to /api/mcp and query your feedback with tools like list_feedback, search_feedback, and feedback_stats.
+        - generic [ref=e58]:
+          - heading "Forms as config, not code" [level=3] [ref=e59]
+          - paragraph [ref=e60]: Define projects and forms as JSON files in a config folder. Each form declares a field schema that submissions are validated against with Zod. Easy for humans, trivial for LLMs.
+        - generic [ref=e61]:
+          - heading "PostgreSQL or SQLite" [level=3] [ref=e62]
+          - paragraph [ref=e63]: Pick your database with one env var. SQLite means a single container with zero external dependencies; PostgreSQL is the production default.
+        - generic [ref=e64]:
+          - heading "Slack cross-posting" [level=3] [ref=e65]
+          - paragraph [ref=e66]: Set a webhook URL and every submission is posted to Slack right after it hits the database, globally or per project. Your team sees feedback in real time.
+        - generic [ref=e67]:
+          - heading "Three-layer auth" [level=3] [ref=e68]
+          - paragraph [ref=e69]: Public ingest keys for submitting, an MCP secret for reading and analysis, and optional end-user JWT verification (JWKS, PEM, or HMAC) to attach verified user identities to feedback.
+    - generic [ref=e71]:
+      - generic [ref=e72]:
+        - heading "Your AI assistant is the dashboard" [level=2] [ref=e73]
+        - paragraph [ref=e74]: Add your instance to Claude Code or any MCP client with a single secret. The server exposes read and analysis tools over streamable HTTP, so “check the feedback” becomes a conversation, not a chore.
+        - list [ref=e75]:
+          - listitem [ref=e76]:
+            - generic [ref=e77]: ✓
+            - generic [ref=e78]: "list_projects / list_forms: see what's configured"
+          - listitem [ref=e79]:
+            - generic [ref=e80]: ✓
+            - generic [ref=e81]: "list_feedback / get_feedback: read submissions with filters"
+          - listitem [ref=e82]:
+            - generic [ref=e83]: ✓
+            - generic [ref=e84]: "search_feedback: full-text search across data and metadata"
+          - listitem [ref=e85]:
+            - generic [ref=e86]: ✓
+            - generic [ref=e87]: "feedback_stats: counts by platform, form, or day"
+      - generic [ref=e88]:
+        - paragraph [ref=e89]: .mcp.json
+        - code [ref=e91]: "{ \"mcpServers\": { \"feedback\": { \"command\": \"npx\", \"args\": [ \"-y\", \"mcp-remote\", \"https://feedback.your-domain.com/api/mcp\", \"--header\", \"Authorization: Bearer ${MCP_SECRET}\" ] } } }"
+    - generic [ref=e93]:
+      - heading "Frequently asked questions" [level=2] [ref=e94]
+      - generic [ref=e95]:
+        - group [ref=e96]:
+          - generic "What is a feedback MCP server?" [ref=e97] [cursor=pointer]
+        - group [ref=e98]:
+          - generic "Is Feedback MCP free?" [ref=e99] [cursor=pointer]
+        - group [ref=e100]:
+          - generic "How do I send feedback from my app?" [ref=e101] [cursor=pointer]
+        - group [ref=e102]:
+          - generic "How do I analyze feedback with Claude?" [ref=e103] [cursor=pointer]
+        - group [ref=e104]:
+          - generic "Which databases are supported?" [ref=e105] [cursor=pointer]
+        - group [ref=e106]:
+          - generic "Do I need to build a dashboard?" [ref=e107] [cursor=pointer]
+    - generic [ref=e108]:
+      - heading "Own your feedback. Analyze it with AI." [level=2] [ref=e109]
+      - paragraph [ref=e110]: Clone the repo, set two environment variables, and start collecting feedback in minutes.
+      - link "View on GitHub" [ref=e111] [cursor=pointer]:
+        - /url: https://github.com/Parra-Inc/feedback-mcp
+      - paragraph [ref=e113]:
+        - text: Feedback MCP is MIT licensed open source software by
+        - link "Parra" [ref=e114] [cursor=pointer]:
+          - /url: https://github.com/Parra-Inc
+        - text: .
+  - alert [ref=e115]

@@ -1,0 +1,23 @@
+# Self-host Feedback MCP with SQLite: no external database needed.
+#   1. cp apps/server/.env.example .env   (then fill in MCP_SECRET, keys)
+#   2. docker compose up -d
+# For PostgreSQL, use: docker compose -f docker-compose.postgres.yml up -d
+services:
+  feedback-mcp:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      DATABASE_PROVIDER: sqlite
+      DATABASE_URL: file:/data/feedback.db
+    volumes:
+      - feedback-data:/data
+    restart: unless-stopped
+
+volumes:
+  feedback-data:

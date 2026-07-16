@@ -1,0 +1,22 @@
+# One-click deploy blueprint for Render (https://render.com/deploy)
+services:
+  - type: web
+    name: feedback-mcp
+    runtime: docker
+    dockerfilePath: apps/server/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_PROVIDER
+        value: postgresql
+      - key: DATABASE_URL
+        fromDatabase:
+          name: feedback-db
+          property: connectionString
+      - key: MCP_SECRET
+        generateValue: true
+
+databases:
+  - name: feedback-db
+    plan: free

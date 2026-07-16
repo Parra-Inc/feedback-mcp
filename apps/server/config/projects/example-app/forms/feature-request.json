@@ -1,0 +1,10 @@
+{
+  "slug": "feature-request",
+  "name": "Feature Request",
+  "description": "An idea or improvement you would like to see.",
+  "fields": [
+    { "name": "title", "type": "string", "label": "Title", "required": true, "max": 120 },
+    { "name": "details", "type": "string", "label": "Tell us more", "required": true, "max": 5000 },
+    { "name": "importance", "type": "number", "label": "How important is this to you? (1-5)", "min": 1, "max": 5 }
+  ]
+}

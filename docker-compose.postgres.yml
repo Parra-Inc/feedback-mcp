@@ -1,0 +1,38 @@
+# Self-host Feedback MCP with PostgreSQL.
+#   1. cp apps/server/.env.example .env   (then fill in MCP_SECRET, keys)
+#   2. docker compose -f docker-compose.postgres.yml up -d
+services:
+  feedback-mcp:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./.env
+        required: false
+    environment:
+      DATABASE_PROVIDER: postgresql
+      DATABASE_URL: postgresql://feedback:feedback@db:5432/feedback
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: feedback
+      POSTGRES_PASSWORD: feedback
+      POSTGRES_DB: feedback
+    volumes:
+      - feedback-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U feedback"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  feedback-postgres:

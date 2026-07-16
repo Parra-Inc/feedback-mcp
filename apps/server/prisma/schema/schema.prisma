@@ -1,0 +1,10 @@
+// The datasource provider is managed by scripts/prepare-prisma.mjs based on
+// the DATABASE_PROVIDER env var ("postgresql" or "sqlite"). Do not edit the
+// provider by hand; run `pnpm prisma:prepare` instead.
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}

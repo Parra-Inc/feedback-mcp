@@ -1,0 +1,8 @@
+{
+  "slug": "example-app",
+  "name": "Example App",
+  "description": "A sample project showing how to configure Feedback MCP. Copy this directory to add your own app.",
+  "platforms": ["ios", "android", "web"],
+  "ingestKeys": [{ "id": "default", "secretEnv": "EXAMPLE_APP_INGEST_KEY" }],
+  "slackWebhookEnv": "EXAMPLE_APP_SLACK_WEBHOOK"
+}
