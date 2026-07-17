@@ -15,4 +15,9 @@ export default {
   datasource: {
     url: process.env.DATABASE_URL || defaultUrls[provider] || defaultUrls.postgresql,
   },
+  // Migration history is maintained for PostgreSQL (the production default).
+  // SQLite deployments use `prisma db push`; see docker-entrypoint.sh.
+  migrations: {
+    path: "prisma/migrations",
+  },
 } satisfies PrismaConfig;

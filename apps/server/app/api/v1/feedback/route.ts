@@ -6,6 +6,8 @@ import { verifyUserToken } from "@/lib/auth/user-jwt";
 import { postFeedbackToSlack } from "@/lib/slack/post";
 import { prisma } from "@/lib/prisma/client";
 import { serializeJson } from "@/lib/json";
+import { maybeSweepRetention } from "@/lib/feedback/retention";
+import { checkRateLimit, getClientIp, rateLimitFromEnv } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +40,24 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
 
+function tooManyRequests(retryAfterSeconds: number) {
+  return Response.json(
+    { error: "Too many requests" },
+    {
+      status: 429,
+      headers: { ...corsHeaders, "Retry-After": String(retryAfterSeconds) },
+    }
+  );
+}
+
 // POST /api/v1/feedback
 export async function POST(request: Request) {
+  // Cheap shed before any parsing: per-IP first, per-project after routing.
+  const ip = getClientIp(request);
+  const ipLimit = rateLimitFromEnv("RATE_LIMIT_IP_PER_MINUTE", 60);
+  const ipCheck = checkRateLimit(`ip:${ip}`, ipLimit);
+  if (!ipCheck.allowed) return tooManyRequests(ipCheck.retryAfterSeconds);
+
   let rawBody: unknown;
   try {
     rawBody = await request.json();
@@ -69,6 +87,10 @@ export async function POST(request: Request) {
   if (!project) {
     return json({ error: `Unknown project "${projectSlug}"` }, 404);
   }
+
+  const projectLimit = rateLimitFromEnv("RATE_LIMIT_PROJECT_PER_MINUTE", 600);
+  const projectCheck = checkRateLimit(`project:${project.slug}`, projectLimit);
+  if (!projectCheck.allowed) return tooManyRequests(projectCheck.retryAfterSeconds);
 
   const ingestAuth = verifyIngestKey(request, project);
   if (!ingestAuth.success) {
@@ -129,6 +151,9 @@ export async function POST(request: Request) {
       userId: userAuth.userId,
     },
   });
+
+  // Opportunistic retention sweep; no-op unless FEEDBACK_RETENTION_DAYS is set.
+  maybeSweepRetention();
 
   // Cross-post to Slack after the write. postFeedbackToSlack never throws.
   await postFeedbackToSlack({

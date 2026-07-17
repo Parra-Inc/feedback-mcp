@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: |
+          pnpm --filter @feedback-mcp/server typecheck
+          pnpm --filter @feedback-mcp/site typecheck
+      - name: Unit tests
+        run: pnpm --filter @feedback-mcp/server test
+      - name: Smoke test (build + boot + API/MCP/OAuth end to end)
+        run: bash apps/server/scripts/smoke.sh
+      - name: Build site
+        run: pnpm --filter @feedback-mcp/site build

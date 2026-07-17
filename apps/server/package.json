@@ -1,6 +1,6 @@
 {
   "name": "@feedback-mcp/server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 3060",
@@ -8,10 +8,14 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "bash scripts/smoke.sh",
     "prisma:prepare": "node scripts/prepare-prisma.mjs",
     "db:sync": "node scripts/prepare-prisma.mjs && prisma format && prisma generate && prisma db push",
     "db:sync:force": "node scripts/prepare-prisma.mjs && prisma format && prisma generate && prisma db push --accept-data-loss",
     "db:migrate": "node scripts/prepare-prisma.mjs && prisma migrate dev",
+    "db:deploy": "node scripts/prepare-prisma.mjs && prisma migrate deploy",
     "db:studio": "prisma studio --browser none --port 5560",
     "up": "docker compose up -d",
     "down": "docker compose down",
@@ -38,6 +42,7 @@
     "@types/react-dom": "^19",
     "prisma": "^7.5.0",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

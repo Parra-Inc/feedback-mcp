@@ -1,17 +1,17 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createMcpServer } from "@/lib/mcp/server";
-import { getBearerToken, safeEqual } from "@/lib/auth/secret";
+import { getBearerToken } from "@/lib/auth/secret";
+import { verifyMcpToken } from "@/lib/auth/admin";
+import { getPublicOrigin } from "@/lib/auth/oauth";
 
 export const dynamic = "force-dynamic";
 
+// Accepts the raw MCP_SECRET or an OAuth access token issued by this
+// instance (see lib/auth/oauth.ts for the claude.ai connector flow).
 function authenticateRequest(request: Request): boolean {
-  const secret = process.env.MCP_SECRET;
-  if (!secret) return false;
-
   const token = getBearerToken(request);
   if (!token) return false;
-
-  return safeEqual(token, secret);
+  return verifyMcpToken(token);
 }
 
 // POST /api/mcp
@@ -23,7 +23,13 @@ export async function POST(request: Request) {
         error: { code: -32001, message: "Unauthorized" },
         id: null,
       },
-      { status: 401 }
+      {
+        status: 401,
+        headers: {
+          // Points OAuth-capable MCP clients at the discovery document.
+          "WWW-Authenticate": `Bearer resource_metadata="${getPublicOrigin(request)}/.well-known/oauth-protected-resource"`,
+        },
+      }
     );
   }
 

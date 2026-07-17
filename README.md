@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Parra-Inc/feedback-mcp/actions/workflows/ci.yml"><img src="https://github.com/Parra-Inc/feedback-mcp/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-34d399" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/PRs-welcome-34d399" alt="PRs welcome" />
   <img src="https://img.shields.io/badge/Next.js-16-black" alt="Next.js 16" />
@@ -74,7 +75,11 @@ curl -X POST http://localhost:3000/api/v1/feedback \
 
 ## Connect Claude
 
-The MCP server is served over streamable HTTP at `/api/mcp` and authenticated with your `MCP_SECRET` as a bearer token.
+The MCP server is served over streamable HTTP at `/api/mcp`. Two ways to authenticate:
+
+**claude.ai and Claude Desktop (OAuth)**
+
+Add a custom connector with the URL `https://feedback.your-domain.com/api/mcp`. The server implements the MCP OAuth flow (discovery, dynamic client registration, PKCE): claude.ai opens an approval page where you enter your `MCP_SECRET` once, and tokens are issued from there. Rotating `MCP_SECRET` revokes every issued token.
 
 **Claude Code**
 
@@ -204,7 +209,7 @@ Ingest (CORS-open, ingest key):
 |---|---|---|
 | `POST` | `/api/v1/feedback` | Submit feedback: `{ project, form, platform?, data, metadata? }` |
 
-Read (requires `Authorization: Bearer <MCP_SECRET>`):
+Read and manage (requires `Authorization: Bearer <MCP_SECRET>`):
 
 | Method | Path | Description |
 |---|---|---|
@@ -212,16 +217,34 @@ Read (requires `Authorization: Bearer <MCP_SECRET>`):
 | `GET` | `/api/v1/projects/:slug` | One project |
 | `GET` | `/api/v1/projects/:slug/forms` | Forms for a project |
 | `GET` | `/api/v1/projects/:slug/feedback` | Feedback with `form`, `platform`, `since`, `until`, `limit`, `cursor` query params |
+| `DELETE` | `/api/v1/projects/:slug/feedback` | Bulk delete with `user`, `form`, `platform`, `before` filters (or `all=true`). Covers GDPR erasure requests. |
+| `GET` | `/api/v1/projects/:slug/export` | Stream every submission as NDJSON (backups, portability) |
+| `GET` | `/api/v1/feedback/:id` | One submission |
+| `DELETE` | `/api/v1/feedback/:id` | Delete one submission |
 | `GET` | `/api/health` | Health check (no auth) |
+
+## Rate limiting
+
+The ingest endpoint is rate limited out of the box: per client IP (default 60/min) and per project (default 600/min), returning `429` with a `Retry-After` header. Tune or disable with `RATE_LIMIT_IP_PER_MINUTE` and `RATE_LIMIT_PROJECT_PER_MINUTE` (`0` disables). The limiter is in-process; if you run multiple replicas or serverless, add a shared limit at your reverse proxy.
+
+## Data lifecycle
+
+- **Delete**: remove a single submission by id, or bulk delete by user, form, platform, or age (see the table above). Deleting by `user` handles GDPR/CCPA erasure requests.
+- **Export**: stream a project's entire history as NDJSON for backups or offline analysis.
+- **Retention**: set `FEEDBACK_RETENTION_DAYS` and feedback older than the window is deleted automatically (swept at most hourly, piggybacking on ingest traffic; no cron needed).
 
 ## Environment variables
 
 | Variable | Required | Description |
 |---|---|---|
-| `MCP_SECRET` | yes | Bearer secret for the MCP server and admin read API. `openssl rand -hex 32` |
+| `MCP_SECRET` | yes | Bearer secret for the MCP server, admin API, and OAuth flow. `openssl rand -hex 32` |
 | `DATABASE_PROVIDER` | no | `postgresql` (default) or `sqlite` |
 | `DATABASE_URL` | no | Connection string. Defaults: local Postgres on `:5457`, or `file:./data/feedback.db` for SQLite |
 | `SLACK_WEBHOOK_URL` | no | Slack incoming webhook; every submission is cross-posted after the database write |
+| `RATE_LIMIT_IP_PER_MINUTE` | no | Ingest requests per minute per client IP (default `60`, `0` disables) |
+| `RATE_LIMIT_PROJECT_PER_MINUTE` | no | Ingest requests per minute per project (default `600`, `0` disables) |
+| `FEEDBACK_RETENTION_DAYS` | no | Auto-delete feedback older than this many days (unset keeps everything) |
+| `PUBLIC_URL` | no | Public origin used in OAuth discovery metadata when behind a proxy, e.g. `https://feedback.your-domain.com` |
 | `CONFIG_DIR` | no | Override the config directory (default `config/` in the app root) |
 | *per-project vars* | | Whatever your `project.json` files reference via `secretEnv`, `slackWebhookEnv`, `publicKeyEnv` |
 
@@ -231,8 +254,8 @@ See [apps/server/.env.example](apps/server/.env.example) for a documented templa
 
 The Prisma schema is a single portable `Feedback` table, so switching providers is one env var:
 
-- **PostgreSQL** (default): production-ready, uses the `@prisma/adapter-pg` driver adapter.
-- **SQLite**: perfect for a single container with a volume. Zero external services.
+- **PostgreSQL** (default): production-ready, uses the `@prisma/adapter-pg` driver adapter, with real migration history (`prisma migrate deploy` runs on container start).
+- **SQLite**: perfect for a single container with a volume. Zero external services. Schema is applied with `prisma db push`, which refuses destructive changes.
 - **MongoDB**: on the roadmap, currently blocked on a Prisma 7 driver adapter.
 
 The provider is baked into the Prisma schema at generate time; `pnpm db:sync` (or the Docker entrypoint) rewrites it from `DATABASE_PROVIDER` automatically.
@@ -251,16 +274,34 @@ MCP_SECRET=dev EXAMPLE_APP_INGEST_KEY=dev pnpm dev   # server on :3060
 ```
 
 - SQLite instead: `DATABASE_PROVIDER=sqlite pnpm db:sync && DATABASE_PROVIDER=sqlite ... pnpm dev`
+- Unit tests: `pnpm --filter @feedback-mcp/server test`
+- End-to-end smoke test: `pnpm --filter @feedback-mcp/server smoke`
 - Prisma Studio: `pnpm --filter @feedback-mcp/server db:studio` (`:5560`)
 - Marketing site: `pnpm dev:site` (`:3061`), deployed to GitHub Pages from `apps/site`
 
 Repo layout:
 
 ```
-apps/server   the self-hosted app: ingest API + read API + MCP server
+apps/server   the self-hosted app: ingest API + read API + MCP server + OAuth
 apps/site     the marketing one-pager (static export, GitHub Pages)
 assets        open-assets project for the banner and social images
+examples      copy-paste client snippets (Swift, TypeScript)
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide and [SECURITY.md](SECURITY.md) for reporting vulnerabilities. Client integration snippets live in [examples/](examples/).
+
+## Roadmap and non-goals
+
+Planned:
+
+- MongoDB support (blocked on a Prisma 7 driver adapter)
+- A `delete_feedback` MCP tool (destructive operations are REST-only for now)
+- Drop-in feedback form widgets
+
+Non-goals, by design:
+
+- **A web dashboard.** The read API, MCP tools, and Slack are the interface. Your AI assistant is the dashboard.
+- **A hosted SaaS.** Feedback MCP is self-hosted; your feedback lives in your database.
 
 ## License
 

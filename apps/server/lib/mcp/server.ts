@@ -47,7 +47,7 @@ const dateArgs = {
 export function createMcpServer() {
   const server = new McpServer({
     name: "feedback-mcp",
-    version: "0.1.0",
+    version: "0.2.0",
   });
 
   server.tool(

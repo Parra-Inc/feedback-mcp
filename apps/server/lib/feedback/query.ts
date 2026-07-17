@@ -54,6 +54,7 @@ function buildWhere(params: {
   project: string;
   form?: string;
   platform?: string;
+  userId?: string;
   since?: Date;
   until?: Date;
 }) {
@@ -61,6 +62,7 @@ function buildWhere(params: {
     projectSlug: params.project,
     ...(params.form ? { formSlug: params.form } : {}),
     ...(params.platform ? { platform: params.platform } : {}),
+    ...(params.userId ? { userId: params.userId } : {}),
     ...(params.since || params.until
       ? {
           createdAt: {
@@ -70,6 +72,40 @@ function buildWhere(params: {
         }
       : {}),
   };
+}
+
+export interface DeleteFeedbackParams {
+  project: string;
+  form?: string;
+  platform?: string;
+  userId?: string;
+  until?: Date;
+}
+
+export async function deleteFeedback(params: DeleteFeedbackParams): Promise<number> {
+  const result = await prisma.feedback.deleteMany({ where: buildWhere(params) });
+  return result.count;
+}
+
+export async function deleteFeedbackById(id: string): Promise<boolean> {
+  const result = await prisma.feedback.deleteMany({ where: { id } });
+  return result.count > 0;
+}
+
+// Streams every submission for a project, oldest first, in stable batches.
+export async function* iterateFeedback(project: string, batchSize = 1000) {
+  let cursor: string | undefined;
+  for (;;) {
+    const rows = await prisma.feedback.findMany({
+      where: { projectSlug: project },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      take: batchSize,
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+    });
+    for (const row of rows) yield serializeFeedback(row);
+    if (rows.length < batchSize) return;
+    cursor = rows[rows.length - 1].id;
+  }
 }
 
 export async function listFeedback(

@@ -1,0 +1,54 @@
+name: Bug report
+description: Something is broken or behaving unexpectedly
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Configure a project with ...
+        2. POST /api/v1/feedback with ...
+        3. See error
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: v0.2.0 (or a commit SHA)
+    validations:
+      required: true
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database provider
+      options:
+        - postgresql
+        - sqlite
+    validations:
+      required: true
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: How is it deployed?
+      options:
+        - Docker Compose
+        - Render
+        - Vercel
+        - Other / local dev
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Server logs around the failure. Redact secrets.
+      render: shell
