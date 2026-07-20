@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: apps/server/Dockerfile
     ports:
-      - "3000:3000"
+      - "3065:3000"
     env_file:
       - path: ./.env
         required: false

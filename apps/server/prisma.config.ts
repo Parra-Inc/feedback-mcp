@@ -6,7 +6,7 @@ const raw = (process.env.DATABASE_PROVIDER || "postgresql").toLowerCase();
 const provider = raw === "postgres" ? "postgresql" : raw;
 
 const defaultUrls: Record<string, string> = {
-  postgresql: "postgresql://feedback:feedback@localhost:5457/feedback",
+  postgresql: "postgresql://feedback:feedback@localhost:5452/feedback",
   sqlite: `file:${path.join(process.cwd(), "data", "feedback.db")}`,
 };
 

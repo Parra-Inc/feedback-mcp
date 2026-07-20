@@ -38,17 +38,17 @@ Prefer PostgreSQL?
 docker compose -f docker-compose.postgres.yml up -d
 ```
 
-The server listens on `http://localhost:3000`. Check it:
+The server listens on `http://localhost:3065`. Check it:
 
 ```bash
-curl http://localhost:3000/api/health
+curl http://localhost:3065/api/health
 # {"status":"ok","database":"ok","config":"ok","projects":1}
 ```
 
 Submit your first feedback:
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/feedback \
+curl -X POST http://localhost:3065/api/v1/feedback \
   -H "Content-Type: application/json" \
   -H "X-Feedback-Key: $EXAMPLE_APP_INGEST_KEY" \
   -d '{
@@ -239,7 +239,7 @@ The ingest endpoint is rate limited out of the box: per client IP (default 60/mi
 |---|---|---|
 | `MCP_SECRET` | yes | Bearer secret for the MCP server, admin API, and OAuth flow. `openssl rand -hex 32` |
 | `DATABASE_PROVIDER` | no | `postgresql` (default) or `sqlite` |
-| `DATABASE_URL` | no | Connection string. Defaults: local Postgres on `:5457`, or `file:./data/feedback.db` for SQLite |
+| `DATABASE_URL` | no | Connection string. Defaults: local Postgres on `:5452`, or `file:./data/feedback.db` for SQLite |
 | `SLACK_WEBHOOK_URL` | no | Slack incoming webhook; every submission is cross-posted after the database write |
 | `RATE_LIMIT_IP_PER_MINUTE` | no | Ingest requests per minute per client IP (default `60`, `0` disables) |
 | `RATE_LIMIT_PROJECT_PER_MINUTE` | no | Ingest requests per minute per project (default `600`, `0` disables) |
@@ -268,16 +268,22 @@ Set `SLACK_WEBHOOK_URL` (or a per-project `slackWebhookEnv`) and every accepted 
 
 ```bash
 pnpm install
-pnpm up                          # local Postgres on :5457 (or use sqlite below)
-pnpm db:sync                     # generate client + push schema
-MCP_SECRET=dev EXAMPLE_APP_INGEST_KEY=dev pnpm dev   # server on :3060
+pnpm dev                         # frees ports, starts Postgres (:5452), syncs, runs server + site
 ```
 
-- SQLite instead: `DATABASE_PROVIDER=sqlite pnpm db:sync && DATABASE_PROVIDER=sqlite ... pnpm dev`
+Or run the pieces yourself:
+
+```bash
+pnpm up                          # local Postgres on :5452 (or use sqlite below)
+pnpm db:sync                     # generate client + push schema
+MCP_SECRET=dev EXAMPLE_APP_INGEST_KEY=dev pnpm dev:server   # server on :3065
+```
+
+- SQLite instead: `DATABASE_PROVIDER=sqlite pnpm db:sync && DATABASE_PROVIDER=sqlite ... pnpm dev:server`
 - Unit tests: `pnpm --filter @feedback-mcp/server test`
 - End-to-end smoke test: `pnpm --filter @feedback-mcp/server smoke`
-- Prisma Studio: `pnpm --filter @feedback-mcp/server db:studio` (`:5560`)
-- Marketing site: `pnpm dev:site` (`:3061`), deployed to GitHub Pages from `apps/site`
+- Prisma Studio: `pnpm --filter @feedback-mcp/server db:studio` (`:5572`), or `pnpm dev --studio`
+- Marketing site: `pnpm dev:site` (`:3066`), deployed to GitHub Pages from `apps/site`
 
 Repo layout:
 

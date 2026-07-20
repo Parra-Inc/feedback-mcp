@@ -5,7 +5,10 @@
   "description": "Free, open-source, self-hosted feedback collection with a built-in MCP server",
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm --filter @feedback-mcp/server dev",
+    "dev": "bash scripts/dev.sh",
+    "dev:force": "bash scripts/dev.sh --force",
+    "dev:tunnel": "bash scripts/dev.sh --tunnel",
+    "dev:server": "pnpm --filter @feedback-mcp/server dev",
     "dev:site": "pnpm --filter @feedback-mcp/site dev",
     "build": "pnpm -r build",
     "db:sync": "pnpm --filter @feedback-mcp/server db:sync",

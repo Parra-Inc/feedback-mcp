@@ -26,6 +26,6 @@ export function getDatabaseUrl(): string {
       return `file:${path.join(process.cwd(), "data", "feedback.db")}`;
     case "postgresql":
     default:
-      return "postgresql://feedback:feedback@localhost:5457/feedback";
+      return "postgresql://feedback:feedback@localhost:5452/feedback";
   }
 }

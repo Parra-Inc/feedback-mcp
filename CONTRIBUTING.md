@@ -12,25 +12,28 @@ cd feedback-mcp
 pnpm install
 
 # Option A: PostgreSQL (matches production defaults)
-pnpm up                      # local Postgres on :5457
+pnpm up                      # local Postgres on :5452
 pnpm db:sync
 
 # Option B: SQLite (no Docker needed)
 DATABASE_PROVIDER=sqlite pnpm db:sync
 
-# Run the server (http://localhost:3060)
-MCP_SECRET=dev EXAMPLE_APP_INGEST_KEY=dev pnpm dev
+# Run the server (http://localhost:3065)
+MCP_SECRET=dev EXAMPLE_APP_INGEST_KEY=dev pnpm dev:server
 ```
+
+Or boot everything at once (frees stale ports, starts the dev Postgres,
+syncs the schema, runs the server and the site): `pnpm dev`.
 
 Other useful commands (all from the repo root unless noted):
 
 | Command | What it does |
 |---|---|
-| `pnpm dev:site` | Marketing site dev server on :3061 |
+| `pnpm dev:site` | Marketing site dev server on :3066 |
 | `pnpm --filter @feedback-mcp/server test` | Unit tests (Vitest) |
 | `pnpm --filter @feedback-mcp/server smoke` | Full end-to-end smoke test (build, boot, API/MCP/OAuth) |
 | `pnpm --filter @feedback-mcp/server typecheck` | TypeScript check |
-| `pnpm --filter @feedback-mcp/server db:studio` | Prisma Studio on :5560 |
+| `pnpm --filter @feedback-mcp/server db:studio` | Prisma Studio on :5572 |
 
 ## Project layout
 
