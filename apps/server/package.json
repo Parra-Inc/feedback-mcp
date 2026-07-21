@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "smoke": "bash scripts/smoke.sh",
     "prisma:prepare": "node scripts/prepare-prisma.mjs",
+    "build:config": "node scripts/build-config.mjs",
     "db:sync": "node scripts/prepare-prisma.mjs && prisma format && prisma generate && prisma db push",
     "db:sync:force": "node scripts/prepare-prisma.mjs && prisma format && prisma generate && prisma db push --accept-data-loss",
     "db:migrate": "node scripts/prepare-prisma.mjs && prisma migrate dev",
@@ -19,23 +20,32 @@
     "db:studio": "prisma studio --browser none --port 5572",
     "up": "docker compose up -d",
     "down": "docker compose down",
+    "build:cf": "DATABASE_PROVIDER=d1 node scripts/prepare-prisma.mjs && DATABASE_PROVIDER=d1 prisma generate && node scripts/build-config.mjs && DATABASE_PROVIDER=d1 opennextjs-cloudflare build",
+    "preview": "DATABASE_PROVIDER=d1 opennextjs-cloudflare preview",
+    "cf:deploy": "pnpm build:cf && wrangler deploy",
+    "cf:d1:create": "wrangler d1 create feedback-mcp-web-production",
+    "cf:d1:migrate": "wrangler d1 migrations apply feedback-mcp-web-production --remote",
+    "cf:d1:migrate:local": "wrangler d1 migrations apply feedback-mcp-web-production --local",
     "postinstall": "node scripts/prepare-prisma.mjs && prisma generate"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@prisma/adapter-better-sqlite3": "^7.5.0",
+    "@prisma/adapter-d1": "^7.5.0",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "better-sqlite3": "^12.4.1",
     "dotenv": "^17.3.1",
     "jose": "^6.2.2",
-    "next": "16.2.1",
+    "next": "16.2.10",
     "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260719.1",
+    "@opennextjs/cloudflare": "^1.20.1",
     "@types/node": "^22",
     "@types/pg": "^8",
     "@types/react": "^19",
@@ -43,6 +53,7 @@
     "prisma": "^7.5.0",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.112.0"
   }
 }

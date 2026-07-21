@@ -18,7 +18,7 @@ There is intentionally no dashboard. Projects and forms are declarative JSON con
 - **One endpoint in.** `POST /api/v1/feedback` from iOS, Android, web, or any backend.
 - **MCP out.** `list_feedback`, `search_feedback`, `feedback_stats`, and more at `/api/mcp`.
 - **Forms as config.** Each form declares a field schema; submissions are validated with Zod.
-- **Your database.** PostgreSQL or SQLite, chosen with one env var.
+- **Your database.** PostgreSQL, SQLite, or Cloudflare D1, chosen with one env var.
 - **Slack cross-posting.** Optional webhook posts every submission to your team channel.
 
 ## Quickstart (Docker)
@@ -71,6 +71,7 @@ curl -X POST http://localhost:3065/api/v1/feedback \
 |---|---|
 | **Render** | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Parra-Inc/feedback-mcp) (uses `render.yaml`: web service + managed Postgres, auto-generated `MCP_SECRET`) |
 | **Vercel** | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FParra-Inc%2Ffeedback-mcp&root-directory=apps%2Fserver&env=DATABASE_URL,MCP_SECRET&envDescription=Postgres%20connection%20string%20and%20a%20secret%20for%20the%20MCP%20server) (bring a Postgres URL, e.g. from Neon; SQLite does not persist on serverless) |
+| **Cloudflare Workers** | Serverless, no per-seat pricing, with a D1 (SQLite) database. `cd apps/server && pnpm build:cf && pnpm cf:deploy`. Full guide: [docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md). |
 | **Anywhere with Docker** | `docker build -f apps/server/Dockerfile .` and run with the env vars below. Fly.io, Railway, a VPS: anywhere a container and a volume (or a Postgres) live. |
 
 ## Connect Claude
@@ -252,13 +253,14 @@ See [apps/server/.env.example](apps/server/.env.example) for a documented templa
 
 ## Databases
 
-The Prisma schema is a single portable `Feedback` table, so switching providers is one env var:
+The Prisma schema is a single portable `Feedback` table, so switching providers is one env var (`DATABASE_PROVIDER`):
 
-- **PostgreSQL** (default): production-ready, uses the `@prisma/adapter-pg` driver adapter, with real migration history (`prisma migrate deploy` runs on container start).
-- **SQLite**: perfect for a single container with a volume. Zero external services. Schema is applied with `prisma db push`, which refuses destructive changes.
+- **PostgreSQL** (`postgresql`, default): production-ready, uses the `@prisma/adapter-pg` driver adapter, with real migration history (`prisma migrate deploy` runs on container start).
+- **SQLite** (`sqlite`): perfect for a single container with a volume. Zero external services. Schema is applied with `prisma db push`, which refuses destructive changes.
+- **Cloudflare D1** (`d1`): SQLite at the edge, via `@prisma/adapter-d1`, for the Cloudflare Workers deployment. See [docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md).
 - **MongoDB**: on the roadmap, currently blocked on a Prisma 7 driver adapter.
 
-The provider is baked into the Prisma schema at generate time; `pnpm db:sync` (or the Docker entrypoint) rewrites it from `DATABASE_PROVIDER` automatically.
+The SQL dialect is baked into the Prisma schema at generate time; `pnpm db:sync` (or the Docker entrypoint / `build:cf`) rewrites it from `DATABASE_PROVIDER` automatically (`d1` uses the SQLite dialect).
 
 ## Slack cross-posting
 

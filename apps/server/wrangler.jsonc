@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "feedback-mcp-web-production",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  // nodejs_compat is required by OpenNext and by the parts of Feedback MCP that
+  // use node:crypto (auth) and Prisma.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Static assets emitted by the OpenNext build.
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+
+  // Cloudflare D1: the SQLite-compatible database, reached through the `DB`
+  // binding (see lib/prisma/client.ts). database_id is filled in by the deploy
+  // workflow (create-if-missing, then substituted); for local `preview` a
+  // local D1 is created automatically by miniflare.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "feedback-mcp-web-production",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "prisma/d1/migrations"
+    }
+  ],
+
+  // Non-secret config. Secrets (MCP_SECRET, ingest keys, Slack webhook) are
+  // pushed by CI with `wrangler secret bulk` from the GitHub environment.
+  "vars": {
+    "DATABASE_PROVIDER": "d1",
+    // Workers cannot walk the config directory at runtime, so read the
+    // build-time bundle (lib/config/generated.json) instead. See build:config.
+    "CONFIG_SOURCE": "bundle"
+  },
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

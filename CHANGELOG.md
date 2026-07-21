@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- Cloudflare Workers deployment target backed by a D1 (SQLite) database, via OpenNext and `@prisma/adapter-d1`. New `DATABASE_PROVIDER=d1`, `wrangler.jsonc`, `build:cf`/`preview`/`cf:*` scripts, a `deploy-cloudflare.yml` workflow, and [docs/DEPLOY-CLOUDFLARE.md](docs/DEPLOY-CLOUDFLARE.md). Existing PostgreSQL, SQLite, Docker, Render, and Vercel targets are unchanged.
+- Build-time config bundle (`pnpm build:config` → `lib/config/generated.json`) so the config tree loads without filesystem access on Workers (`CONFIG_SOURCE=bundle`).
+
+### Changed
+
+- The Prisma client is now constructed lazily (on first use) instead of at module load, so the D1 binding resolves per request on Workers.
+- Bumped Next.js to 16.2.10 (required by `@opennextjs/cloudflare`).
+
 ## [0.2.0] - 2026-07-16
 
 ### Added

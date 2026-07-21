@@ -6,6 +6,11 @@ node_modules/
 out/
 next-env.d.ts
 
+# cloudflare / opennext
+.open-next/
+.wrangler/
+.dev.vars
+
 # env files (keep the examples)
 .env
 .env.*

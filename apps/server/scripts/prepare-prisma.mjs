@@ -11,17 +11,21 @@ const provider = raw === "postgres" ? "postgresql" : raw;
 
 if (provider === "mongodb") {
   console.error(
-    "[prisma] MongoDB is not supported yet: Prisma 7 requires driver adapters and none exists for MongoDB. Use \"postgresql\" or \"sqlite\"."
+    "[prisma] MongoDB is not supported yet: Prisma 7 requires driver adapters and none exists for MongoDB. Use \"postgresql\", \"sqlite\", or \"d1\"."
   );
   process.exit(1);
 }
 
-if (provider !== "postgresql" && provider !== "sqlite") {
+if (provider !== "postgresql" && provider !== "sqlite" && provider !== "d1") {
   console.error(
-    `[prisma] Unsupported DATABASE_PROVIDER "${raw}". Use "postgresql" or "sqlite".`
+    `[prisma] Unsupported DATABASE_PROVIDER "${raw}". Use "postgresql", "sqlite", or "d1".`
   );
   process.exit(1);
 }
+
+// D1 is SQLite under the hood, so it uses the "sqlite" schema dialect. The
+// runtime adapter (@prisma/adapter-d1) is selected separately in the client.
+const dialect = provider === "d1" ? "sqlite" : provider;
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const schemaPath = path.join(here, "..", "prisma", "schema", "schema.prisma");
@@ -29,12 +33,12 @@ const schemaPath = path.join(here, "..", "prisma", "schema", "schema.prisma");
 const current = readFileSync(schemaPath, "utf8");
 const next = current.replace(
   /provider = "(postgresql|sqlite)"/,
-  `provider = "${provider}"`
+  `provider = "${dialect}"`
 );
 
 if (next !== current) {
   writeFileSync(schemaPath, next);
-  console.log(`[prisma] datasource provider set to "${provider}"`);
+  console.log(`[prisma] datasource provider set to "${dialect}" (DATABASE_PROVIDER=${provider})`);
 } else {
-  console.log(`[prisma] datasource provider already "${provider}"`);
+  console.log(`[prisma] datasource provider already "${dialect}"`);
 }

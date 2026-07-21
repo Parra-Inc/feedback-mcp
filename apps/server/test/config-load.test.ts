@@ -77,4 +77,18 @@ describe("loadConfig", () => {
     fs.rmSync(configDir, { recursive: true, force: true });
     expect(() => loadConfig({ force: true })).toThrow(/Config directory not found/);
   });
+
+  it("reads the build-time bundle when CONFIG_SOURCE=bundle (Workers/D1 path)", () => {
+    // The committed lib/config/generated.json holds the example-app project.
+    // On this path the filesystem is never touched, so CONFIG_DIR is ignored.
+    delete process.env.CONFIG_DIR;
+    process.env.CONFIG_SOURCE = "bundle";
+    try {
+      const { projects } = loadConfig({ force: true });
+      expect(projects.some((project) => project.slug === "example-app")).toBe(true);
+      expect(projects[0].forms.length).toBeGreaterThan(0);
+    } finally {
+      delete process.env.CONFIG_SOURCE;
+    }
+  });
 });

@@ -1,0 +1,11 @@
+# Local secrets for `pnpm preview` (the real Worker build in workerd).
+# Copy to .dev.vars (gitignored) and fill in. These mirror the Worker secrets
+# that CI pushes in production; non-secret config lives in wrangler.jsonc vars.
+
+MCP_SECRET=dev-mcp-secret
+EXAMPLE_APP_INGEST_KEY=dev-ingest-key
+
+# Optional
+# SLACK_WEBHOOK_URL=
+# EXAMPLE_APP_SLACK_WEBHOOK=
+# PUBLIC_URL=http://localhost:8771

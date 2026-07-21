@@ -1,0 +1,97 @@
+{
+  "projects": [
+    {
+      "dirName": "example-app",
+      "projectJson": {
+        "slug": "example-app",
+        "name": "Example App",
+        "description": "A sample project showing how to configure Feedback MCP. Copy this directory to add your own app.",
+        "platforms": [
+          "ios",
+          "android",
+          "web"
+        ],
+        "ingestKeys": [
+          {
+            "id": "default",
+            "secretEnv": "EXAMPLE_APP_INGEST_KEY"
+          }
+        ],
+        "slackWebhookEnv": "EXAMPLE_APP_SLACK_WEBHOOK"
+      },
+      "forms": [
+        {
+          "fileBase": "bug-report",
+          "formJson": {
+            "slug": "bug-report",
+            "name": "Bug Report",
+            "description": "Something is broken or not working as expected.",
+            "fields": [
+              {
+                "name": "title",
+                "type": "string",
+                "label": "Title",
+                "required": true,
+                "max": 120
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "label": "What happened?",
+                "required": true,
+                "max": 5000
+              },
+              {
+                "name": "severity",
+                "type": "enum",
+                "label": "Severity",
+                "values": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              {
+                "name": "email",
+                "type": "email",
+                "label": "Your email (optional)"
+              }
+            ]
+          }
+        },
+        {
+          "fileBase": "feature-request",
+          "formJson": {
+            "slug": "feature-request",
+            "name": "Feature Request",
+            "description": "An idea or improvement you would like to see.",
+            "fields": [
+              {
+                "name": "title",
+                "type": "string",
+                "label": "Title",
+                "required": true,
+                "max": 120
+              },
+              {
+                "name": "details",
+                "type": "string",
+                "label": "Tell us more",
+                "required": true,
+                "max": 5000
+              },
+              {
+                "name": "importance",
+                "type": "number",
+                "label": "How important is this to you? (1-5)",
+                "min": 1,
+                "max": 5
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
