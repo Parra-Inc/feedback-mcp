@@ -1,0 +1,7 @@
+{
+  "_comment": "Populated by the capture step (VHS + Playwright). Null clips render as polished animated fallbacks, so the video builds before any footage exists. Run `npm run capture:terminal` and `npm run capture` to fill this in.",
+  "terminal": null,
+  "site": null,
+  "form": null,
+  "timing": {}
+}

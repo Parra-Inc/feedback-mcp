@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1360, initial-scale=1" />
+  <title>Feedback MCP demo harness</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1360px; height: 766px; overflow: hidden;
+      background: linear-gradient(135deg, #06110d 0%, #0b2019 55%, #081517 100%);
+      font-family: 'Inter', system-ui, sans-serif; color: #fff;
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .grid { position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 46px 46px; -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 40%, transparent 100%); }
+    .glow { position: absolute; top: 50%; left: 50%; width: 900px; height: 560px; transform: translate(-50%,-50%);
+      background: radial-gradient(ellipse at center, rgba(52,211,153,0.13) 0%, transparent 68%); }
+    .card { position: relative; z-index: 2; width: 520px; border-radius: 22px;
+      background: linear-gradient(170deg, #12261f 0%, #0e1f1a 100%); border: 1px solid rgba(255,255,255,0.13);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08); padding: 32px 34px 34px; }
+    .title { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 800; margin-bottom: 24px; }
+    .ti { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(160deg,#34d399,#0e9f6e); position: relative; }
+    .ti::after { content:''; position:absolute; inset:8px; border-radius:4px; background: rgba(255,255,255,0.92);
+      clip-path: polygon(0 0, 100% 0, 100% 70%, 55% 70%, 30% 100%, 30% 70%, 0 70%); }
+    label { display:block; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; letter-spacing:1px;
+      text-transform:uppercase; color: rgba(255,255,255,0.4); margin: 0 0 8px; }
+    input, textarea { width:100%; border-radius:10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 14px; font-size: 16px; color:#fff; font-family:'Inter',sans-serif; margin-bottom: 18px; outline: none; }
+    input:focus, textarea:focus { border-color: rgba(52,211,153,0.5); box-shadow: 0 0 0 3px rgba(52,211,153,0.12); }
+    textarea { height: 84px; resize: none; }
+    .sev { display:flex; gap:8px; margin-bottom: 24px; }
+    .pill { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color: rgba(255,255,255,0.55);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; padding: 7px 16px; cursor: pointer; }
+    .pill[aria-pressed="true"] { color:#06110d; background:#f59e0b; border-color:#f59e0b; }
+    button.submit { width:100%; border:none; border-radius: 11px; background: linear-gradient(160deg,#34d399,#0e9f6e);
+      color:#06110d; font-size:17px; font-weight:800; padding: 14px 0; cursor:pointer; box-shadow: 0 10px 26px rgba(52,211,153,0.28); }
+    .toast { position:absolute; z-index:5; left:50%; bottom:64px; transform: translateX(-50%) translateY(20px);
+      display:flex; align-items:center; gap:12px; font-family:'JetBrains Mono',monospace; font-size:15px; color:#06110d;
+      background: linear-gradient(160deg,#34d399,#0e9f6e); border-radius: 100px; padding: 12px 22px; font-weight:700;
+      opacity:0; transition: opacity .35s ease, transform .35s ease; box-shadow: 0 14px 40px rgba(52,211,153,0.3); }
+    .toast.show { opacity:1; transform: translateX(-50%) translateY(0); }
+    .toast .check { width:20px; height:20px; border-radius:50%; background:#06110d; color:#34d399; display:flex; align-items:center; justify-content:center; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow"></div>
+
+  <div class="card">
+    <div class="title"><div class="ti"></div>Bug Report</div>
+    <label>Title</label>
+    <input id="title" placeholder="What went wrong?" />
+    <label>What happened?</label>
+    <textarea id="description" placeholder="Describe the issue…"></textarea>
+    <label>Severity</label>
+    <div class="sev">
+      <div class="pill" data-sev="low" aria-pressed="false">low</div>
+      <div class="pill" data-sev="medium" aria-pressed="false">medium</div>
+      <div class="pill" data-sev="high" aria-pressed="false">high</div>
+      <div class="pill" data-sev="critical" aria-pressed="false">critical</div>
+    </div>
+    <button class="submit" id="submit">Send feedback</button>
+  </div>
+
+  <div class="toast" id="toast"><span class="check">✓</span><span id="toast-text">Feedback sent · fb_3xK9…</span></div>
+
+  <script>
+    // Playwright injects window.__API_URL and window.__INGEST_KEY via addInitScript.
+    const API_URL = window.__API_URL || "http://localhost:3065";
+    const INGEST_KEY = window.__INGEST_KEY || "dev";
+
+    document.querySelectorAll(".pill").forEach((p) => {
+      p.addEventListener("click", () => {
+        document.querySelectorAll(".pill").forEach((x) => x.setAttribute("aria-pressed", "false"));
+        p.setAttribute("aria-pressed", "true");
+      });
+    });
+
+    document.getElementById("submit").addEventListener("click", async () => {
+      const sevEl = document.querySelector('.pill[aria-pressed="true"]');
+      const payload = {
+        project: "example-app",
+        form: "bug-report",
+        platform: "ios",
+        data: {
+          title: document.getElementById("title").value || "Crash on launch",
+          description: document.getElementById("description").value || "App closes immediately after opening.",
+          severity: sevEl ? sevEl.dataset.sev : "high",
+        },
+      };
+      let id = "fb_3xK9…";
+      try {
+        const res = await fetch(API_URL + "/api/v1/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Feedback-Key": INGEST_KEY },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        if (json?.feedback?.id) id = json.feedback.id;
+      } catch (e) {
+        // Server not running, still show a clean success so the capture is usable.
+      }
+      document.getElementById("toast-text").textContent = "Feedback sent · " + id;
+      document.getElementById("toast").classList.add("show");
+    });
+  </script>
+</body>
+</html>

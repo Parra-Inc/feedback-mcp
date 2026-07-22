@@ -1,0 +1,29 @@
+{
+  "name": "feedback-mcp-demo-video",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remotion + Playwright/VHS pipeline that produces the Feedback MCP demo video",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render Demo out/feedback-mcp-demo.mp4 --log=verbose",
+    "still": "remotion still Demo out/thumbnail.png --frame=690",
+    "capture": "playwright test",
+    "capture:terminal": "vhs capture/terminal.tape",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/google-fonts": "^4.0.0",
+    "@remotion/media-utils": "^4.0.0",
+    "@remotion/transitions": "^4.0.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "^4.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.6.3"
+  }
+}
