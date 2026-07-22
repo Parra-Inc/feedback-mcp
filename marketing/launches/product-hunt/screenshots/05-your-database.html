@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1270" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1270px; height: 760px; overflow: hidden;
+      background: linear-gradient(135deg, #06110d 0%, #0b2019 55%, #081517 100%);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif; position: relative; }
+    .grid { position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 46px 46px; -webkit-mask-image: radial-gradient(ellipse 96% 84% at 50% 46%, black 42%, transparent 100%); }
+    .glow-a { position: absolute; top: 40%; left: 20%; width: 620px; height: 460px; background: radial-gradient(ellipse at center, rgba(52,211,153,0.12) 0%, transparent 68%); transform: translateY(-50%); }
+    .glow-b { position: absolute; top: 60%; right: 12%; width: 560px; height: 440px; background: radial-gradient(ellipse at center, rgba(125,211,252,0.08) 0%, transparent 70%); transform: translateY(-50%); }
+    .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 120% 110% at 50% 50%, transparent 55%, rgba(3,10,8,0.55) 100%); }
+    .brand { position: absolute; top: 40px; left: 76px; display: flex; align-items: center; gap: 13px; z-index: 5; }
+    .mark { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(170deg, #123128 0%, #0c241d 100%);
+      border: 1.5px solid rgba(52,211,153,0.45); box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(52,211,153,0.16), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center; }
+    .mark .bubble { width: 20px; height: 15px; border-radius: 6px; background: linear-gradient(160deg, #34d399, #0e9f6e); position: relative;
+      display: flex; align-items: center; justify-content: center; gap: 2.5px; }
+    .mark .bubble::after { content: ''; position: absolute; bottom: -4px; left: 4px; width: 6px; height: 6px; background: #0e9f6e; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .mark .bd { width: 3px; height: 3px; border-radius: 50%; background: rgba(6,17,13,0.85); }
+    .wordmark { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.92); letter-spacing: -0.4px; }
+    .badge { position: absolute; top: 44px; right: 76px; z-index: 5; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.45); }
+
+    .center { position: absolute; top: 118px; left: 0; right: 0; text-align: center; z-index: 3; }
+    .kicker { display: inline-flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 3px; color: #34d399; text-transform: uppercase; margin-bottom: 18px; justify-content: center; }
+    .title { font-size: 56px; font-weight: 800; color: #fff; letter-spacing: -2.2px; line-height: 1.02; margin-bottom: 16px; }
+    .subtitle { font-size: 21px; font-weight: 400; color: rgba(255,255,255,0.64); line-height: 1.5; }
+    .subtitle strong { color: rgba(255,255,255,0.92); font-weight: 600; }
+
+    .dbs { position: absolute; top: 320px; left: 0; right: 0; display: flex; justify-content: center; gap: 22px; z-index: 3; }
+    .db { width: 258px; border-radius: 16px; background: linear-gradient(170deg, #12261f 0%, #0e1f1a 100%); border: 1px solid rgba(255,255,255,0.13);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.07); padding: 22px 22px 20px; }
+    .db.primary { border-color: rgba(52,211,153,0.42); box-shadow: 0 20px 60px rgba(0,0,0,0.42), 0 0 40px rgba(52,211,153,0.13), inset 0 1px 0 rgba(255,255,255,0.08); }
+    .db-top { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+    .db-ic { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+    .db-cyl { width: 20px; height: 22px; border-radius: 10px 10px 8px 8px / 5px 5px 4px 4px; position: relative; }
+    .db-cyl::before { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.4); }
+    .db-name { font-size: 18px; font-weight: 700; color: #fff; }
+    .db-tag { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .db-env { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: -0.2px; color: rgba(255,255,255,0.8); background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 9px; padding: 9px 10px; margin-top: 4px; white-space: nowrap; overflow: hidden; }
+    .db-env .v { color: #86efac; }
+
+    .deploys { position: absolute; bottom: 74px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 3; }
+    .deploy-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .deploy-row { display: flex; gap: 12px; }
+    .deploy { display: inline-flex; align-items: center; gap: 9px; font-size: 14.5px; font-weight: 600; color: rgba(255,255,255,0.82);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; padding: 10px 20px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow-a"></div>
+  <div class="glow-b"></div>
+  <div class="brand"><div class="mark"><div class="bubble"><div class="bd"></div><div class="bd"></div><div class="bd"></div></div></div><div class="wordmark">Feedback MCP</div></div>
+  <div class="badge">05 · own your data</div>
+
+  <div class="center">
+    <div class="kicker">Your database · your infra</div>
+    <div class="title">One env var. Three databases.</div>
+    <div class="subtitle"><strong>Feedback lives in a database you own,</strong> never a vendor's. Switch engines with a single variable.</div>
+  </div>
+
+  <div class="dbs">
+    <div class="db primary">
+      <div class="db-top">
+        <div class="db-ic" style="background: rgba(52,211,153,0.14);"><div class="db-cyl" style="background: linear-gradient(160deg, #34d399, #0e9f6e);"></div></div>
+        <div><div class="db-name">PostgreSQL</div><div class="db-tag">production default</div></div>
+      </div>
+      <div class="db-env">DATABASE_PROVIDER=<span class="v">postgresql</span></div>
+    </div>
+    <div class="db">
+      <div class="db-top">
+        <div class="db-ic" style="background: rgba(255,255,255,0.06);"><div class="db-cyl" style="background: linear-gradient(160deg, #cbd5e1, #94a3b8);"></div></div>
+        <div><div class="db-name">SQLite</div><div class="db-tag">one container + a volume</div></div>
+      </div>
+      <div class="db-env">DATABASE_PROVIDER=<span class="v">sqlite</span></div>
+    </div>
+    <div class="db">
+      <div class="db-top">
+        <div class="db-ic" style="background: rgba(125,211,252,0.14);"><div class="db-cyl" style="background: linear-gradient(160deg, #7dd3fc, #38bdf8);"></div></div>
+        <div><div class="db-name">Cloudflare D1</div><div class="db-tag">SQLite at the edge</div></div>
+      </div>
+      <div class="db-env">DATABASE_PROVIDER=<span class="v">d1</span></div>
+    </div>
+  </div>
+
+  <div class="deploys">
+    <div class="deploy-label">Deploy in one click</div>
+    <div class="deploy-row">
+      <div class="deploy"><div class="dot" style="background:#46e3b1;"></div>Render</div>
+      <div class="deploy"><div class="dot" style="background:#fff;"></div>Vercel</div>
+      <div class="deploy"><div class="dot" style="background:#f6821f;"></div>Cloudflare Workers</div>
+      <div class="deploy"><div class="dot" style="background:#2496ed;"></div>Docker anywhere</div>
+    </div>
+  </div>
+
+  <div class="vignette"></div>
+</body>
+</html>

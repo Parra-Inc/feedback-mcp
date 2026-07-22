@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "assets": {
+    "gallery/01-hero": {
+      "1270x760": {
+        "sourceChecksum": "sha256:6366cb34eeecae191388dd0eb3d2eb6afd5fabc7f4722dfc15fdfd6323dc5498",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/marketing/launches/product-hunt/exports/gallery/01-hero.png",
+        "exportedAt": "2026-07-21T22:11:27.880Z"
+      }
+    },
+    "gallery/02-endpoint-in": {
+      "1270x760": {
+        "sourceChecksum": "sha256:e9e760b02b572171358acc6a3887b03e23577b54f066510ffd8a0a65a51e846a",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/marketing/launches/product-hunt/exports/gallery/02-endpoint-in.png",
+        "exportedAt": "2026-07-21T22:11:29.582Z"
+      }
+    },
+    "gallery/03-mcp-out": {
+      "1270x760": {
+        "sourceChecksum": "sha256:c7d2ea2a2888769776ed038457fb8fc0b00b8592e58198db2bcdbb27ba156da2",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/marketing/launches/product-hunt/exports/gallery/03-mcp-out.png",
+        "exportedAt": "2026-07-21T22:22:38.547Z"
+      }
+    },
+    "gallery/04-forms-as-config": {
+      "1270x760": {
+        "sourceChecksum": "sha256:cf8081ca1f71e701b4cf634d6aefea0f317a037aca7000fc160f47873cb3c0cf",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/marketing/launches/product-hunt/exports/gallery/04-forms-as-config.png",
+        "exportedAt": "2026-07-21T22:11:32.985Z"
+      }
+    },
+    "gallery/05-your-database": {
+      "1270x760": {
+        "sourceChecksum": "sha256:79f28ea0e05e44f767d534ccac675f9bdef87066c112b8e2cba62a42f9571044",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/marketing/launches/product-hunt/exports/gallery/05-your-database.png",
+        "exportedAt": "2026-07-21T22:23:13.895Z"
+      }
+    },
+    "gallery/06-cta": {
+      "1270x760": {
+        "sourceChecksum": "sha256:1a76d8c4c7a86cdd4d02462333abe0025307dedec01dd0883948e78a25aaf1d8",
+        "outputPath": "/Users/ianmaccallum/Developer/Repos/feedback-mcp/marketing/launches/product-hunt/exports/gallery/06-cta.png",
+        "exportedAt": "2026-07-21T22:11:36.433Z"
+      }
+    }
+  }
+}

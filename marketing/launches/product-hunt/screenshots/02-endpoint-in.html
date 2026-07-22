@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1270" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1270px; height: 760px; overflow: hidden;
+      background: linear-gradient(135deg, #06110d 0%, #0b2019 55%, #081517 100%);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif; position: relative; }
+    .grid { position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 46px 46px; -webkit-mask-image: radial-gradient(ellipse 92% 82% at 60% 45%, black 40%, transparent 100%); }
+    .glow { position: absolute; top: 44%; right: 4%; width: 720px; height: 560px;
+      background: radial-gradient(ellipse at center, rgba(52,211,153,0.14) 0%, transparent 68%); transform: translateY(-50%); }
+    .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 120% 110% at 50% 50%, transparent 55%, rgba(3,10,8,0.55) 100%); }
+    .brand { position: absolute; top: 40px; left: 76px; display: flex; align-items: center; gap: 13px; z-index: 5; }
+    .mark { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(170deg, #123128 0%, #0c241d 100%);
+      border: 1.5px solid rgba(52,211,153,0.45); box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(52,211,153,0.16), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center; }
+    .mark .bubble { width: 20px; height: 15px; border-radius: 6px; background: linear-gradient(160deg, #34d399, #0e9f6e); position: relative;
+      display: flex; align-items: center; justify-content: center; gap: 2.5px; }
+    .mark .bubble::after { content: ''; position: absolute; bottom: -4px; left: 4px; width: 6px; height: 6px; background: #0e9f6e; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .mark .bd { width: 3px; height: 3px; border-radius: 50%; background: rgba(6,17,13,0.85); }
+    .wordmark { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.92); letter-spacing: -0.4px; }
+    .badge { position: absolute; top: 44px; right: 76px; z-index: 5; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.45); }
+
+    .copy { position: absolute; left: 76px; top: 50%; transform: translateY(-50%); width: 420px; z-index: 3; }
+    .kicker { display: inline-flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; letter-spacing: 3px; color: #34d399; text-transform: uppercase; margin-bottom: 22px; }
+    .kicker-dash { width: 26px; height: 1px; background: linear-gradient(90deg, #34d399, transparent); }
+    .title { font-size: 60px; font-weight: 800; color: #fff; letter-spacing: -2.4px; line-height: 1.0; margin-bottom: 24px; }
+    .subtitle { font-size: 21px; font-weight: 400; color: rgba(255,255,255,0.64); line-height: 1.55; max-width: 400px; margin-bottom: 30px; }
+    .subtitle strong { color: rgba(255,255,255,0.92); font-weight: 600; }
+    .facts { display: flex; flex-direction: column; gap: 13px; }
+    .fact { display: flex; align-items: center; gap: 11px; font-size: 15.5px; color: rgba(255,255,255,0.78); }
+    .tick { width: 22px; height: 22px; border-radius: 7px; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.35);
+      display: flex; align-items: center; justify-content: center; color: #34d399; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+
+    /* code window */
+    .win { position: absolute; right: 76px; top: 50%; transform: translateY(-50%); width: 640px; border-radius: 16px;
+      background: linear-gradient(180deg, #0c1a15 0%, #0a1613 100%); border: 1px solid rgba(255,255,255,0.13);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(52,211,153,0.08), inset 0 1px 0 rgba(255,255,255,0.07); overflow: hidden; z-index: 3; }
+    .win-bar { display: flex; align-items: center; gap: 8px; padding: 14px 18px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .wd { width: 11px; height: 11px; border-radius: 50%; }
+    .wd.r { background: #ff5f57; } .wd.y { background: #febc2e; } .wd.g { background: #28c840; }
+    .win-title { margin-left: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); }
+    .code { padding: 22px 24px 24px; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.75; color: rgba(255,255,255,0.85); }
+    .code .c { color: rgba(255,255,255,0.38); }
+    .code .cmd { color: #86efac; }
+    .code .flag { color: rgba(255,255,255,0.5); }
+    .code .str { color: #7dd3fc; }
+    .code .key { color: #34d399; }
+    .code .punc { color: rgba(255,255,255,0.5); }
+    .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 16px 0; }
+    .code .resp { color: rgba(255,255,255,0.55); }
+    .code .ok { color: #34d399; }
+    .indent { padding-left: 22px; }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow"></div>
+  <div class="brand"><div class="mark"><div class="bubble"><div class="bd"></div><div class="bd"></div><div class="bd"></div></div></div><div class="wordmark">Feedback MCP</div></div>
+  <div class="badge">02 · ingest</div>
+
+  <div class="copy">
+    <div class="kicker">One endpoint in<span class="kicker-dash"></span></div>
+    <div class="title">POST from<br />any app.</div>
+    <div class="subtitle"><strong>iOS, Android, web, or any backend.</strong> One HTTP call, validated against your form schema.</div>
+    <div class="facts">
+      <div class="fact"><div class="tick">✓</div>Zod-validated, unknown keys rejected</div>
+      <div class="fact"><div class="tick">✓</div>Per-project ingest key, safe in clients</div>
+      <div class="fact"><div class="tick">✓</div>Rate-limited out of the box</div>
+    </div>
+  </div>
+
+  <div class="win">
+    <div class="win-bar"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div><div class="win-title">submit-feedback.sh</div></div>
+    <div class="code">
+      <div><span class="cmd">curl</span> <span class="flag">-X</span> POST https://feedback.your-app.com/api/v1/feedback \</div>
+      <div class="indent"><span class="flag">-H</span> <span class="str">"X-Feedback-Key: $INGEST_KEY"</span> \</div>
+      <div class="indent"><span class="flag">-d</span> <span class="punc">'{</span></div>
+      <div class="indent">&nbsp;&nbsp;<span class="key">"project"</span><span class="punc">:</span> <span class="str">"example-app"</span><span class="punc">,</span></div>
+      <div class="indent">&nbsp;&nbsp;<span class="key">"form"</span><span class="punc">:</span> <span class="str">"bug-report"</span><span class="punc">,</span></div>
+      <div class="indent">&nbsp;&nbsp;<span class="key">"platform"</span><span class="punc">:</span> <span class="str">"ios"</span><span class="punc">,</span></div>
+      <div class="indent">&nbsp;&nbsp;<span class="key">"data"</span><span class="punc">:</span> <span class="punc">{</span> <span class="key">"title"</span><span class="punc">:</span> <span class="str">"Crash on launch"</span><span class="punc">,</span> <span class="key">"severity"</span><span class="punc">:</span> <span class="str">"high"</span> <span class="punc">}</span></div>
+      <div class="indent"><span class="punc">}'</span></div>
+      <div class="divider"></div>
+      <div class="resp"><span class="punc">{</span> <span class="key">"feedback"</span><span class="punc">:</span> <span class="punc">{</span> <span class="key">"id"</span><span class="punc">:</span> <span class="str">"fb_3xK9…"</span><span class="punc">,</span> <span class="key">"createdAt"</span><span class="punc">:</span> <span class="str">"2026-…"</span> <span class="punc">} }</span> <span class="ok">← 200</span></div>
+    </div>
+  </div>
+
+  <div class="vignette"></div>
+</body>
+</html>

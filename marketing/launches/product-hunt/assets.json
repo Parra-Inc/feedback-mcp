@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "name": "Feedback MCP: Product Hunt gallery",
+  "publicDir": "public",
+  "command": "open-assets render --force",
+  "collections": [
+    {
+      "id": "gallery",
+      "label": "Product Hunt Gallery",
+      "sourceSize": { "width": 1270, "height": 760 },
+      "borderRadius": 12,
+      "templates": [
+        { "src": "screenshots/01-hero.html", "name": "01-hero", "label": "1 · Hero (thumbnail)" },
+        { "src": "screenshots/02-endpoint-in.html", "name": "02-endpoint-in", "label": "2 · One endpoint in" },
+        { "src": "screenshots/03-mcp-out.html", "name": "03-mcp-out", "label": "3 · MCP out" },
+        { "src": "screenshots/04-forms-as-config.html", "name": "04-forms-as-config", "label": "4 · Forms as config" },
+        { "src": "screenshots/05-your-database.html", "name": "05-your-database", "label": "5 · Your database" },
+        { "src": "screenshots/06-cta.html", "name": "06-cta", "label": "6 · Get started" }
+      ],
+      "export": [
+        { "name": "2x", "label": "Product Hunt 2x", "size": { "width": 2540, "height": 1520 } },
+        { "name": "1x", "label": "Product Hunt 1x", "size": { "width": 1270, "height": 760 } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1270" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1270px; height: 760px; overflow: hidden;
+      background: linear-gradient(135deg, #06110d 0%, #0b2019 55%, #081517 100%);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif; position: relative;
+      display: flex; align-items: center; justify-content: center; }
+    .grid { position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 46px 46px; -webkit-mask-image: radial-gradient(ellipse 90% 82% at 50% 50%, black 40%, transparent 100%); }
+    .glow { position: absolute; top: 50%; left: 50%; width: 960px; height: 600px;
+      background: radial-gradient(ellipse at center, rgba(52,211,153,0.15) 0%, transparent 68%); transform: translate(-50%, -50%); }
+    .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 120% 110% at 50% 50%, transparent 55%, rgba(3,10,8,0.55) 100%); }
+    .brand { position: absolute; top: 40px; left: 76px; display: flex; align-items: center; gap: 13px; z-index: 5; }
+    .brand .mm { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(170deg, #123128 0%, #0c241d 100%);
+      border: 1.5px solid rgba(52,211,153,0.45); box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center; }
+    .brand .bb { width: 20px; height: 15px; border-radius: 6px; background: linear-gradient(160deg, #34d399, #0e9f6e); position: relative; display: flex; align-items: center; justify-content: center; gap: 2.5px; }
+    .brand .bb::after { content: ''; position: absolute; bottom: -4px; left: 4px; width: 6px; height: 6px; background: #0e9f6e; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .brand .bd { width: 3px; height: 3px; border-radius: 50%; background: rgba(6,17,13,0.85); }
+    .brand .wm { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.92); letter-spacing: -0.4px; }
+    .badge { position: absolute; top: 44px; right: 76px; z-index: 5; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: rgba(255,255,255,0.45); }
+
+    .content { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .mark { width: 100px; height: 100px; border-radius: 26px; background: linear-gradient(170deg, #123128 0%, #0c241d 100%);
+      border: 2px solid rgba(52,211,153,0.45); box-shadow: 0 24px 70px rgba(0,0,0,0.5), 0 0 60px rgba(52,211,153,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 34px; }
+    .bubble { width: 48px; height: 37px; border-radius: 13px; background: linear-gradient(160deg, #34d399, #0e9f6e); position: relative;
+      display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 8px 24px rgba(52,211,153,0.35); }
+    .bubble::after { content: ''; position: absolute; bottom: -8px; left: 10px; width: 14px; height: 14px; background: #0e9f6e; clip-path: polygon(0 0, 100% 0, 0 100%); }
+    .bubble .dot { width: 5.5px; height: 5.5px; border-radius: 50%; background: rgba(6,17,13,0.85); }
+    .title { font-size: 76px; font-weight: 800; color: #fff; letter-spacing: -3px; line-height: 1.0; margin-bottom: 22px; }
+    .title .accent { color: #34d399; }
+    .subtitle { font-size: 24px; font-weight: 400; color: rgba(255,255,255,0.66); line-height: 1.45; max-width: 720px; margin-bottom: 36px; }
+    .subtitle strong { color: rgba(255,255,255,0.92); font-weight: 600; }
+    .repo { display: inline-flex; align-items: center; gap: 11px; font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 500; color: #06110d;
+      background: linear-gradient(160deg, #34d399, #0e9f6e); border-radius: 100px; padding: 15px 30px; box-shadow: 0 14px 40px rgba(52,211,153,0.3); font-weight: 700; }
+    .repo .star { color: #06110d; }
+    .chips { display: flex; gap: 12px; margin-top: 26px; }
+    .chip { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow"></div>
+  <div class="brand"><div class="mm"><div class="bb"><div class="bd"></div><div class="bd"></div><div class="bd"></div></div></div><div class="wm">Feedback MCP</div></div>
+  <div class="badge">06 · get started</div>
+
+  <div class="content">
+    <div class="mark"><div class="bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+    <div class="title">No dashboard. <span class="accent">On purpose.</span></div>
+    <div class="subtitle"><strong>Free, open-source, self-hosted.</strong> Collect user feedback from any app and analyze it with Claude. Clone it and be running in a minute.</div>
+    <div class="repo"><span class="star">★</span> github.com/Parra-Inc/feedback-mcp</div>
+    <div class="chips"><div class="chip">MIT licensed</div><div class="chip">Next.js 16 · Prisma 7</div><div class="chip">MCP over streamable HTTP</div></div>
+  </div>
+
+  <div class="vignette"></div>
+</body>
+</html>
