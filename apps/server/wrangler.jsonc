@@ -20,8 +20,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "feedback-mcp-web-production",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_name": "feedback-mcp-db-production",
+      "database_id": "12243eab-77f7-407d-a927-6fc8152d4a09",
       "migrations_dir": "prisma/d1/migrations"
     }
   ],

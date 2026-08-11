@@ -2,7 +2,7 @@
 // the DATABASE_PROVIDER env var ("postgresql" or "sqlite"). Do not edit the
 // provider by hand; run `pnpm prisma:prepare` instead.
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 generator client {
