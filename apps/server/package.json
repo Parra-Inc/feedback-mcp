@@ -24,8 +24,8 @@
     "preview": "DATABASE_PROVIDER=d1 opennextjs-cloudflare preview",
     "cf:deploy": "pnpm build:cf && wrangler deploy",
     "cf:d1:create": "wrangler d1 create feedback-mcp-web-production",
-    "cf:d1:migrate": "wrangler d1 migrations apply feedback-mcp-web-production --remote",
-    "cf:d1:migrate:local": "wrangler d1 migrations apply feedback-mcp-web-production --local",
+    "cf:d1:migrate": "wrangler d1 migrations apply feedback-mcp-db-production --remote",
+    "cf:d1:migrate:local": "wrangler d1 migrations apply feedback-mcp-db-production --local",
     "postinstall": "node scripts/prepare-prisma.mjs && prisma generate"
   },
   "dependencies": {
