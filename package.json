@@ -5,6 +5,7 @@
   "description": "Free, open-source, self-hosted feedback collection with a built-in MCP server",
   "license": "MIT",
   "scripts": {
+    "deploy": "bash scripts/deploy.sh",
     "dev": "bash scripts/dev.sh",
     "dev:force": "bash scripts/dev.sh --force",
     "dev:tunnel": "bash scripts/dev.sh --tunnel",
