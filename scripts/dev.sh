@@ -195,14 +195,46 @@ fi
 echo "Syncing database schema..."
 pnpm --filter @feedback-mcp/server db:sync --accept-data-loss
 
+# --- Named *.localhost URLs via portless (https://github.com/vercel-labs/portless) -----
+# Optional: everything above works on plain ports with no portless installed.
+HAVE_PORTLESS=0
+SERVER_PORTLESS_SUFFIX=""
+SITE_PORTLESS_SUFFIX=""
+STUDIO_PORTLESS_SUFFIX=""
+if command -v portless >/dev/null 2>&1; then
+  HAVE_PORTLESS=1
+  echo "→ syncing portless routes"
+  portless proxy start --port 443 --https || true
+  portless alias server.feedback-mcp "$SERVER_PORT" --force >/dev/null 2>&1 || true
+  portless alias site.feedback-mcp "$SITE_PORT" --force >/dev/null 2>&1 || true
+  found_port=$(portless list 2>/dev/null | grep -o 'server\.feedback-mcp\.localhost:[0-9]*' | head -1 | cut -d: -f2 || true)
+  if [ -n "$found_port" ] && [ "$found_port" != "443" ]; then
+    SERVER_PORTLESS_SUFFIX=":$found_port"
+  fi
+  site_found_port=$(portless list 2>/dev/null | grep -o 'site\.feedback-mcp\.localhost:[0-9]*' | head -1 | cut -d: -f2 || true)
+  if [ -n "$site_found_port" ] && [ "$site_found_port" != "443" ]; then
+    SITE_PORTLESS_SUFFIX=":$site_found_port"
+  fi
+  if $STUDIO; then
+    portless alias studio.feedback-mcp "$STUDIO_PORT" --force >/dev/null 2>&1 || true
+    studio_found_port=$(portless list 2>/dev/null | grep -o 'studio\.feedback-mcp\.localhost:[0-9]*' | head -1 | cut -d: -f2 || true)
+    if [ -n "$studio_found_port" ] && [ "$studio_found_port" != "443" ]; then
+      STUDIO_PORTLESS_SUFFIX=":$studio_found_port"
+    fi
+  fi
+fi
+
 # --- Banner -------------------------------------------------------------------------------------------
 LAN_IP=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo "")
 echo ""
 printf "${C_BOLD}  feedback-mcp${C_RESET}\n"
 printf "  ${C_ACCENT}Server${C_RESET}    http://localhost:%s\n" "$SERVER_PORT"
+[ "$HAVE_PORTLESS" = "1" ] && printf "  ${C_ACCENT}Named${C_RESET}     https://server.feedback-mcp.localhost%s\n" "$SERVER_PORTLESS_SUFFIX"
 [ -n "$LAN_IP" ] && printf "  ${C_ACCENT}Network${C_RESET}   http://%s:%s\n" "$LAN_IP" "$SERVER_PORT"
 printf "  ${C_ACCENT}Site${C_RESET}      http://localhost:%s\n" "$SITE_PORT"
+[ "$HAVE_PORTLESS" = "1" ] && printf "  ${C_ACCENT}Named${C_RESET}     https://site.feedback-mcp.localhost%s\n" "$SITE_PORTLESS_SUFFIX"
 $STUDIO && printf "  ${C_ACCENT}Studio${C_RESET}    http://localhost:%s\n" "$STUDIO_PORT"
+$STUDIO && [ "$HAVE_PORTLESS" = "1" ] && printf "  ${C_ACCENT}Studio${C_RESET}    https://studio.feedback-mcp.localhost%s\n" "$STUDIO_PORTLESS_SUFFIX"
 if [ "$PROVIDER" = "postgresql" ]; then
   printf "  ${C_ACCENT}Postgres${C_RESET}  %s\n" "${DATABASE_URL:-postgresql://feedback:feedback@localhost:$PG_PORT/feedback}"
 else
