@@ -14,7 +14,17 @@
     "build": "pnpm -r build",
     "db:sync": "pnpm --filter @feedback-mcp/server db:sync",
     "up": "pnpm --filter @feedback-mcp/server up",
-    "down": "pnpm --filter @feedback-mcp/server down"
+    "down": "pnpm --filter @feedback-mcp/server down",
+    "storybook": "storybook dev -p 6086 --no-open",
+    "build-storybook": "storybook build -o storybook-static"
   },
-  "packageManager": "pnpm@9.15.9"
+  "packageManager": "pnpm@9.15.9",
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.5.10",
+    "@storybook/addon-docs": "^10.5.10",
+    "@storybook/react-vite": "^10.5.10",
+    "@tailwindcss/vite": "^4.3.3",
+    "storybook": "^10.5.10",
+    "vite": "^8.2.2"
+  }
 }
