@@ -1,0 +1,9 @@
+/* The app's own tokens, never restated here. */
+@import "../apps/site/app/globals.css";
+
+/* Tailwind v4 source detection is relative to globals.css (apps/site/app), so
+   every component tree outside that folder has to be named. */
+@source "../apps/site/components";
+
+/* apps/site sets its type in globals.css directly (no next/font, no
+   next/head font tags), so there is nothing extra to load here. */
