@@ -1,11 +1,12 @@
 name: Deploy site to GitHub Pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/site/**"
-      - ".github/workflows/pages.yml"
+  # Auto-deploy on push to main disabled; run manually via workflow_dispatch.
+#   push:
+#     branches: [main]
+#     paths:
+#       - "apps/site/**"
+#       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
