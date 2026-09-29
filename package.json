@@ -12,6 +12,7 @@
     "dev:server": "pnpm --filter @feedback-mcp/server dev",
     "dev:site": "pnpm --filter @feedback-mcp/site dev",
     "build": "pnpm -r build",
+    "check": "bash scripts/check.sh",
     "db:sync": "pnpm --filter @feedback-mcp/server db:sync",
     "up": "pnpm --filter @feedback-mcp/server up",
     "down": "pnpm --filter @feedback-mcp/server down",
